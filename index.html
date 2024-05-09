@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Security Car Parking System</title>
+    <style>
+        .title {
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .welcome {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .arrivalTime,
+        .nowlTime,
+        .totalTime,
+        .totalPaymentForTime {
+            text-align: left;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .live {
+            color: red;
+            margin-left: 20px;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0% {
+                opacity: 0;
+            }
+
+            33.33% {
+                opacity: 1;
+            }
+
+            66.66% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .image {
+            margin-top: 20px;
+            border-radius: 5px;
+            border: 2px solid black;
+            width: 70%;
+            height: auto;
+        }
+
+        @media only screen and (max-width: 430px) {
+
+            .arrivalTime,
+            .nowlTime,
+            .totalTime,
+            .totalPaymentForTime {
+                font-size: 14px;
+                text-align: left;
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+
+            .image {
+                border-radius: 5px;
+                border: 2px solid black;
+                width: 100%;
+                height: auto;
+            }
+        }
+
+        h1 {
+            margin-top: 40px;
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            text-align: center;
+        }
+
+        #detailsContainer {
+            display: flex;
+            justify-content: space-evenly;
+            width: auto;
+            margin-top: 50px;
+        }
+
+        #driverDetails {
+            width: 30%;
+        }
+
+        #vehicleDetails {
+            width: 30%;
+        }
+
+        #slotsDetails {
+            width: 30%;
+            display: grid;
+            grid-template-columns: repeat(0, 1fr);
+            grid-gap: 100px;
+        }
+
+        .slot {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #fff;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .not_available {
+            background-color: #dc3545;
+        }
+
+        .available {
+            background-color: #28a745;
+        }
+
+
+
+        fieldset {
+            margin: 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        legend {
+            text-align: left;
+            font-size: 18px;
+            font-weight: bold;
+            font-family: Arial, Helvetica, sans-serif;
+            margin-bottom: 10px;
+        }
+
+        label {
+            text-align: end;
+            display: inline-block;
+            font-size: 16px;
+            font-family: Arial, Helvetica, sans-serif;
+            width: 150px;
+        }
+
+        input {
+            width: 180px;
+            height: 30px;
+            font-size: 16px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        select {
+            width: 188px;
+            height: 30px;
+            font-size: 16px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        button {
+
+            border-radius: 5px;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+        }
+
+        .container div {
+            margin-right: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            font-weight: 400;
+            color: #fff;
+            text-align: center;
+            vertical-align: middle;
+            user-select: none;
+            background-color: #007bff;
+            border: 1px solid transparent;
+            padding: .375rem .75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: .25rem;
+            transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        }
+
+        .btn-primary {
+            color: #fff;
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            color: #fff;
+            background-color: #0069d9;
+            border-color: #0062cc;
+        }
+
+        .btn-primary:focus {
+            color: #fff;
+            background-color: #0069d9;
+            border-color: #0062cc;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
+        }
+
+        .btn-primary:disabled {
+            color: #fff;
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+
+        .warningModal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fff !important;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+
+        }
+
+        .close {
+            color: #dc3545;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .warning-message {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        @media only screen and (max-width: 430px) {
+
+            .modal-content {
+                background-color: #fefefe;
+                margin: 80% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 70%;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+        }
+
+        @media only screen and (max-width: 1024px) {
+            h1 {
+                margin-top: 40px;
+                text-align: center;
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+            legend {
+                text-align: left;
+            }
+
+            label {
+                width: 120px;
+            }
+
+            #detailsContainer {
+                margin-top: 0px;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            #driverDetails,
+            #vehicleDetails,
+            #slotsDetails {
+                width: 100%;
+                margin-top: 20px;
+            }
+
+
+
+        }
+
+        .paymentDetails {
+            margin-left: 20%;
+        }
+
+        #CameraContainer {
+            display: none;
+        }
+
+        #RegistationContainer {
+            display: none;
+        }
+
+        .showCameraContainer {
+            display: block !important;
+        }
+
+        .hideRegistationContainer {
+            display: none !important;
+        }
+
+        .login,
+        .registration {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Smart Security Car Parking System</h1>
+
+    <!-- Add the user login section -->
+    <div id="userLoginSection" style="display: none;">
+        <p class="welcome">Welcome, <span id="userFullName"></span> | <a href="#" id="logoutLink">Logout</a></p>
+    </div>
+
+
+    <div id="loginContainer">
+        <h2 class="login">Login</h2>
+        <input type="text" id="loginEmail" placeholder="Email" required><br><br>
+        <input type="password" id="loginPassword" placeholder="Password" required><br><br>
+        <button id="loginBtn" type="button" class="btn btn-primary">Login</button>
+        <p>Are you new? <span id="signUpLink" style="text-decoration: underline; cursor: pointer;">Create an
+                account</span></p>
+    </div>
+
+    <div id="RegistationContainer">
+        <h2 class="registration">Registration</h2>
+        <div id="detailsContainer">
+
+            <div id="driverDetails">
+                <fieldset>
+                    <legend>Driver Details:</legend>
+
+                    <div class="container">
+                        <div>
+                            <label>Full Name</label>
+                        </div>
+                        <div>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                    </div>
+
+                    <br><br>
+
+                    <div class="container">
+                        <div>
+                            <label>Phone Number</label>
+                        </div>
+                        <div>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" required>
+                        </div>
+                    </div>
+
+                    <br><br>
+
+                    <div class="container">
+                        <div>
+                            <label>NIC</label>
+                        </div>
+                        <div>
+                            <input type="text" id="nic" name="nic" required>
+                        </div>
+                    </div>
+
+                    <br><br>
+
+                    <div class="container">
+                        <div>
+                            <label>Email</label>
+                        </div>
+
+                        <div>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+
+                    <br><br>
+
+                    <div class="container">
+                        <div>
+                            <label>Password</label>
+                        </div>
+                        <div>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+
+
+
+            <div id="vehicleDetails">
+                <fieldset>
+                    <legend>Vehicle Details:</legend>
+
+                    <div class="container">
+                        <div>
+                            <label>Vehicle Number</label>
+                        </div>
+                        <div>
+                            <input type="text" id="vehicleNumber" name="vehicleNumber" required>
+                        </div>
+                    </div>
+
+                    <br><br>
+
+                    <div class="container">
+                        <div>
+                            <label>Vehicle Type</label>
+                        </div>
+                        <div>
+                            <select id="vehicleType" name="vehicleType" required>
+                                <option value="" disabled selected>-Select-</option>
+                                <option value="Car">Car</option>
+                                <option value="Van">Van</option>
+                                <option value="Bike">Bicycle</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <br><br>
+
+                    <div class="container">
+                        <div>
+                            <label>Vehicle Brand</label>
+                        </div>
+                        <div>
+                            <select id="vehicleBrand" name="vehicleBrand" required>
+                                <option value="" disabled selected>-Select-</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <br><br>
+
+                    <div class="container">
+                        <div>
+                            <label>Vehicle Modal</label>
+                        </div>
+                        <div>
+                            <select id="vehicleModal" name="vehicleModal" required>
+                                <option value="" disabled selected>-Select-</option>
+                            </select>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+
+
+
+
+        </div>
+
+
+
+        <br><br>
+
+        <button id="addBtn" type="button" class="btn btn-primary">Register</button>
+        <p>Do you have an account? <span id="signinLink"
+                style="text-decoration: underline; cursor: pointer;">Login</span></p>
+
+        <!-- <button id="retrieveBtn">Retrieve</button>
+    <button id="updateBtn">Update</button>
+    <button id="deleteBtn">Delete</button> -->
+
+    </div>
+
+
+    <div id="DashboardContainer" style="display: none;">
+        <!-- Add the user login section -->
+        <div id="userLoginSection" style="display: none;">
+            <p class="welcome">Welcome, <span id="userFullName"></span> | <a href="#" id="logoutLink">Logout</a></p>
+        </div>
+        <h2 class="title">Dashboard</h2>
+
+        <div id="slotsDetails">
+            <fieldset>
+                <legend>Available Parking Slots:</legend>
+                <div class="slot" id="slot1">
+                    Slot 1
+                </div>
+                <div class="slot" id="slot2">
+                    Slot 2
+                </div>
+            </fieldset>
+        </div>
+
+        <button id="buySlot" type="button" class="btn btn-primary" style="margin-top: 20px;">Check my Slot</button>
+        <button id="wantToBuySlot" type="button" class="btn btn-primary" style="margin-top: 20px;">Buy a Slot</button>
+    </div>
+
+
+    <div id="CameraContainer">
+        <!-- Add the user login section -->
+        <div id="userLoginSection" style="display: none;">
+            <p class="welcome">Welcome, <span id="userFullName"></span> | <a href="#" id="logoutLink">Logout</a></p>
+        </div>
+        <h2 class="title">Your Car Slot Camera : <span class="live">LIVE</span></h2>
+
+        <div class="paymentDetails">
+            <h2 class="arrivalTime"> Arrival Time : <span class="arrivalTimeOut"> </span></h2>
+            <h2 class="nowlTime"> Now Time : <span class="nowlTimeOut"> </span></h2>
+            <h2 class="totalTime"> Total Time : <span class="totalTimeOut"> </span></h2>
+            <h2 class="totalPaymentForTime"> Total Payment for Time : <span class="totalPaymentForTimeOut"> </span></h2>
+        </div>
+
+        <button id="payForDispatch" type="button" class="btn btn-primary">Pay For Dispatch</button>
+
+        <div>
+            <img class="image" src="./cctv.jpg">
+        </div>
+
+    </div>
+
+
+    <!-- Add the payment section -->
+    <div id="thankYouPaymentContainer" style="display: none;">
+        <!-- Add the user login section -->
+        <div id="userLoginSection" style="display: none;">
+            <p class="welcome">Welcome, <span id="userFullName"></span> | <a href="#" id="logoutLink">Logout</a></p>
+        </div>
+        <h1 class="welcome" style="margin-top: 100px;">Thank you.<br> Payment was successfully!<br><br>See You Again.
+        </h1>
+    </div>
+
+    <div id="warningModal" class="warningModal">
+        <div class="modal-content">
+            <p>All parking slots are currently unavailable! <br><br> <span class="warning-message">Come Back
+                    Later</span></p>
+        </div>
+    </div>
+
+
+    <script type="module">
+
+        // // Get references to the slots
+        // const slot1 = document.getElementById('slot1');
+        // const slot2 = document.getElementById('slot2');
+
+        // // Function to update slot colors based on database values
+        // function updateSlotColors() {
+        //     const slotsRef = ref(db, 'SlotsDetails');
+        //     get(slotsRef).then((snapshot) => {
+        //         if (snapshot.exists()) {
+        //             const slots = snapshot.val();
+
+        //             if (slots.slot1 === 1 && slots.slot2 === 1) {
+        //                 warningModal.style.display = "block";
+        //             }
+
+        //         } else {
+        //             console.log("Slots data not found");
+        //         }
+        //     }).catch((error) => {
+        //         console.error("Error getting slots data: ", error);
+        //     });
+        // }
+
+        // updateSlotColors()
+
+        let arrivalTime;
+
+        // Function to update the current time
+        function updateCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const amOrPm = hours >= 12 ? 'PM' : 'AM';
+            const formattedHours = hours % 12 || 12; // Convert to 12-hour format
+            const formattedMinutes = minutes < 10 ? '0' + minutes : minutes; // Add leading zero if needed
+            const currentTime = `${formattedHours}:${formattedMinutes} ${amOrPm}`;
+            return currentTime;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Retrieve user data from session storage
+            const userData = JSON.parse(sessionStorage.getItem('user'));
+
+            // Update paid value to 1 if snapshot of CurrentParkingData does not exist
+            function checkCurrentParkingDataExists() {
+                // Reference to the user's CurrentParkingData node in the database
+                const userParkingDataRef = ref(db, `users/${userData.uid}/CurrentParkingData`);
+
+                // Get the snapshot of CurrentParkingData
+                get(userParkingDataRef).then((snapshot) => {
+                    if (!snapshot.exists()) {
+                        // // Reference to the root 'paid' node in the database
+                        // const paidRef = ref(db, `paid`);
+
+                        // // Update paid value to 1
+                        // set(paidRef, 1).then(() => {
+                        //     console.log("Paid value updated to 1 successfully.");
+                        // }).catch((error) => {
+                        //     console.error("Error updating paid value to 1:", error);
+                        // });
+                    } else {
+                        // Reference to the root 'paid' node in the database
+                        // const paidRef = ref(db, `paid`);
+
+                        // // Update paid value to 1
+                        // set(paidRef, 0).then(() => {
+                        //     console.log("Paid value updated to 0 successfully.");
+                        // }).catch((error) => {
+                        //     console.error("Error updating paid value to 0:", error);
+                        // });
+                    }
+                }).catch((error) => {
+                    console.error("Error getting CurrentParkingData for user:", userData.uid, error);
+                });
+            }
+
+            // Call checkCurrentParkingDataExists initially
+            checkCurrentParkingDataExists();
+
+            // Call checkCurrentParkingDataExists every second to update the time
+            setInterval(checkCurrentParkingDataExists, 1000);
+        });
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Function to calculate the total time difference
+            function calculateTotalTime(arrivalTime, nowTime) {
+                console.log("Arrival time:", arrivalTime);
+                console.log("Now time:", nowTime);
+                const arrival = new Date('01/01/2022 ' + arrivalTime); // Assuming arrivalTime is in format HH:MM AM/PM
+                const now = new Date('01/01/2022 ' + nowTime); // Assuming nowTime is in format HH:MM AM/PM
+
+                const diffMs = now - arrival;
+                console.log("Diff in milliseconds:", diffMs);
+
+                // Convert milliseconds to minutes
+                const diffMinutes = Math.floor(diffMs / 60000);
+                console.log("Diff in minutes:", diffMinutes);
+
+                // Calculate hours and remaining minutes
+                const diffHours = Math.floor(diffMinutes / 60);
+                const remainingMinutes = diffMinutes % 60;
+
+                const totalTime = `${diffHours} hours ${remainingMinutes} minutes`;
+                console.log("Total time:", totalTime);
+                return totalTime;
+            }
+
+
+
+            // Function to calculate the total payment for time based on the rate
+            function calculateTotalPayment(totalTime) {
+                // Split the totalTime string to extract hours and minutes
+                const [hoursStr, minutesStr] = totalTime.split(' hours ');
+                // Convert hours and minutes to integers
+                const hours = parseInt(hoursStr);
+                const minutes = parseInt(minutesStr.split(' minutes')[0]);
+                // Calculate total minutes
+                const totalMinutes = hours * 60 + minutes;
+                // Calculate total payment based on the rate (2 LKR per minute)
+                const totalPayment = totalMinutes * 2;
+                return totalPayment;
+            }
+
+            // Function to update the content of the time span
+            function updateTimeSpan() {
+                const arrivalTimeSpan = document.querySelector('.arrivalTimeOut');
+                const totalTimeSpan = document.querySelector('.totalTimeOut');
+                const nowTimeSpan = document.querySelector('.nowlTimeOut');
+                const totalPaymentSpan = document.querySelector('.totalPaymentForTimeOut');
+
+                // Retrieve user data from session storage
+                const userData = JSON.parse(sessionStorage.getItem('user'));
+
+                if (arrivalTimeSpan && nowTimeSpan && totalTimeSpan && totalPaymentSpan) {
+                    // Reference to the user's CurrentParkingData node in the database
+                    const userParkingDataRef = ref(db, `users/${userData.uid}/CurrentParkingData`);
+
+                    // Get the snapshot of CurrentParkingData
+                    get(userParkingDataRef).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            // Iterate over the child nodes under CurrentParkingData
+                            snapshot.forEach((dateSnapshot) => {
+                                dateSnapshot.forEach((timeSnapshot) => {
+                                    const timeData = timeSnapshot.val();
+
+                                    const paid = timeData.paid;
+
+                                    // Stop the function execution if paid is 1
+                                    if (paid === 1) {
+                                        return;
+                                    }
+                                    const arrivalTime = timeData.arrivalTime;
+
+                                    nowTimeSpan.textContent = updateCurrentTime();
+
+
+                                    // Calculate total time and total payment
+                                    const totalTime = calculateTotalTime(arrivalTime, updateCurrentTime());
+                                    totalTimeSpan.textContent = totalTime;
+
+                                    const totalPayment = calculateTotalPayment(totalTime);
+                                    totalPaymentSpan.textContent = totalPayment + ' LKR';
+
+
+                                    // Update totalTime and totalPayment in the database
+                                    update(timeSnapshot.ref, {
+                                        totalTime: totalTime.toString(),
+                                        totalPayment: totalPayment.toString()
+                                    }).then(() => {
+                                        console.log("Total time and total payment updated successfully.");
+                                    }).catch((error) => {
+                                        console.error("Error updating total time and total payment:", error);
+                                    });
+                                });
+                            });
+                        } else {
+                            console.log("CurrentParkingData not found for user:", userData.uid);
+                        }
+                    }).catch((error) => {
+                        console.error("Error getting CurrentParkingData for user:", userData.uid, error);
+                    });
+                }
+            }
+
+
+
+
+
+
+
+
+            // Call updateTimeSpan initially
+            updateTimeSpan();
+
+            // Call updateTimeSpan every second to update the time
+            setInterval(updateTimeSpan, 1000);
+        });
+
+
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get references to the login and registration containers
+            const loginContainer = document.getElementById('loginContainer');
+            const registrationContainer = document.getElementById('RegistationContainer');
+
+            // Function to toggle between login and registration containers
+            function toggleContainersSignUp() {
+                loginContainer.style.display = 'none';
+                registrationContainer.style.display = 'block';
+            }
+
+            // Event listener for "Sign Up" link or button click
+            const signUpLink = document.getElementById('signUpLink');
+            signUpLink.addEventListener('click', toggleContainersSignUp);
+
+            // Function to toggle between login and registration containers
+            function toggleContainersSignin() {
+                loginContainer.style.display = 'block';
+                registrationContainer.style.display = 'none';
+            }
+
+            // Event listener for "Sign Up" link or button click
+            const signinLink = document.getElementById('signinLink');
+            signinLink.addEventListener('click', toggleContainersSignin);
+        });
+
+        // Get references to the slots
+        const CameraContainer = document.getElementById('CameraContainer');
+        const loginContainer = document.getElementById('loginContainer');
+        const registrationContainer = document.getElementById('RegistationContainer');
+        const thankYouPaymentContainer = document.getElementById('thankYouPaymentContainer');
+
+
+
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCxXLk8jawS8wi4W0jble9Pk5eL8eu1BBI",
+            authDomain: "carparking-a1e90.firebaseapp.com",
+            databaseURL: "https://carparking-a1e90-default-rtdb.firebaseio.com",
+            projectId: "carparking-a1e90",
+            storageBucket: "carparking-a1e90.appspot.com",
+            messagingSenderId: "727645049731",
+            appId: "1:727645049731:web:49800f3c243049d6dc9cb6"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+
+        // Initialize Firebase Authentication and get a reference to the service
+        const auth = getAuth(app);
+        var current_user = auth.currentUser;
+
+        // Inside the loginUser function after successful login
+        function loginUser(email, password) {
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Signed in 
+                    const user = userCredential.user;
+                    // You can do additional tasks here after successful login
+                    // For example, redirect the user to another page or show a success message
+                    console.log("User logged in:", user);
+                    sessionStorage.setItem('user', JSON.stringify(user));
+                    // Show the user login section
+                    document.getElementById('userFullName').textContent = user.email; // Update to display email
+                    document.getElementById('userLoginSection').style.display = 'block';
+                    // Hide the login container and show the camera container
+                    loginContainer.style.display = 'none';
+                    document.getElementById('DashboardContainer').style.display = 'block';
+                    // Display a success toast message
+                    // alert("Login successful!");
+                    console.log("Login successful!");
+                    const users = JSON.parse(sessionStorage.getItem('user'));
+                    if (users) {
+
+                        // Reference to the user's 'CurrentParkingData' value in the database
+                        const userParkingRef = ref(db, `users/${users.uid}/CurrentParkingData`);
+
+                        // Retrieve the 'paid' value from the database
+                        get(userParkingRef).then((snapshot) => {
+                            if (snapshot.exists()) {
+                                document.getElementById('wantToBuySlot').style.display = 'none';
+                                // document.getElementById('DashboardContainer').style.display = 'none';
+                                // document.getElementById('CameraContainer').style.display = 'block';
+                            } else {
+                                console.log("User has already paid. - checked in login");
+                                // Optionally, display a message to inform the user
+                                document.getElementById('buySlot').style.display = 'none';
+                                document.getElementById('wantToBuySlot').style.display = 'inline-block';
+                            }
+                        }).catch((error) => {
+                            console.error("Error getting paid value:", error);
+                        });
+                    }
+                    // Call checkCurrentParkingDataExists initially
+                    checkSlotsAvailable();
+
+                    // Update the user's arrival time after registration
+                    updateArrivalTime(users.uid);
+                    location.reload();
+
+
+
+
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    // Handle errors here
+                    console.error("Login error:", errorMessage);
+                    // You can display an error toast message here if you want
+                    // alert("Login failed. Please check your credentials and try again.");
+                });
+        }
+
+        // Inside the registerUser function after successful registration
+        function registerUser(email, password) {
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+
+                    // Signed up 
+                    const user = userCredential.user;
+                    // You can do additional tasks here after successful registration
+                    // For example, redirect the user to another page or show a success message
+                    console.log("User registered:", user);
+                    sessionStorage.setItem('user', JSON.stringify(user));
+                    // Show the user login section
+                    document.getElementById('userFullName').textContent = user.email; // Update to display email
+                    document.getElementById('userLoginSection').style.display = 'block';
+                    // Hide the registration container and show the camera container
+                    registrationContainer.style.display = 'none';
+                    document.getElementById('DashboardContainer').style.display = 'block';
+                    // Display a success toast message
+                    // alert("Registration successful!");
+                    console.log("Registration successful!");
+                    const users = JSON.parse(sessionStorage.getItem('user'));
+                    if (users) {
+
+                        // Reference to the user's 'CurrentParkingData' value in the database
+                        const userParkingRef = ref(db, `users/${users.uid}/CurrentParkingData`);
+
+                        // Retrieve the 'paid' value from the database
+                        get(userParkingRef).then((snapshot) => {
+                            if (snapshot.exists()) {
+                                document.getElementById('wantToBuySlot').style.display = 'none';
+                                // document.getElementById('DashboardContainer').style.display = 'none';
+                                // document.getElementById('CameraContainer').style.display = 'block';
+                            } else {
+                                console.log("User has already paid. - checked in signup");
+                                // Optionally, display a message to inform the user
+                                document.getElementById('buySlot').style.display = 'none';
+                                document.getElementById('wantToBuySlot').style.display = 'inline-block';
+                            }
+                        }).catch((error) => {
+                            console.error("Error getting paid value:", error);
+                        });
+                    }
+                    AddData(user);
+                    // Call checkCurrentParkingDataExists initially
+                    checkSlotsAvailable();
+                    // Update the user's arrival time after registration
+                    updateArrivalTime(users.uid);
+                    location.reload();
+
+
+
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    // Handle errors here
+                    console.error("Registration error:", errorMessage);
+                    // You can display an error toast message here if you want
+                    alert("Registration failed. Please try again.");
+                });
+        }
+
+        // Check if user data exists in sessionStorage on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            // Call checkCurrentParkingDataExists initially
+            checkSlotsAvailable();
+            // Get the current user from sessionStorage
+            const user = JSON.parse(sessionStorage.getItem('user'));
+            if (user) {
+
+                // Reference to the user's 'CurrentParkingData' value in the database
+                const userParkingRef = ref(db, `users/${user.uid}/CurrentParkingData`);
+
+                // Retrieve the 'paid' value from the database
+                get(userParkingRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        document.getElementById('wantToBuySlot').style.display = 'none';
+                        // document.getElementById('DashboardContainer').style.display = 'none';
+                        // document.getElementById('CameraContainer').style.display = 'block';
+                    } else {
+                        console.log("User has already paid.");
+                        // Optionally, display a message to inform the user
+                        document.getElementById('wantToBuySlot').style.display = 'inline-block';
+                    }
+                }).catch((error) => {
+                    console.error("Error getting paid value:", error);
+                });
+            }
+            // Get the current user from sessionStorage
+            if (user) {
+
+                // Reference to the user's 'CurrentParkingData' value in the database
+                const userParkingRef = ref(db, `users/${user.uid}/CurrentParkingData`);
+
+                // Retrieve the 'paid' value from the database
+                get(userParkingRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        document.getElementById('wantToBuySlot').style.display = 'none';
+                        // document.getElementById('DashboardContainer').style.display = 'none';
+                        // document.getElementById('CameraContainer').style.display = 'block';
+                    } else {
+                        console.log("User has already paid.");
+                        // Optionally, display a message to inform the user
+                        document.getElementById('buySlot').style.display = 'none';
+                    }
+                }).catch((error) => {
+                    console.error("Error getting paid value:", error);
+                });
+            } else {
+                console.error("No user is logged in.");
+            }
+
+            const userData = sessionStorage.getItem('user');
+            if (userData) {
+                // User data exists, parse it and log in the user
+                const user = JSON.parse(userData);
+                // Continue with login process
+                // For example, update UI to show user as logged in
+                console.log("Login successful! User data found in sessionStorage:", user);
+                // Show the user login section
+                document.getElementById('userFullName').textContent = user.email; // Update to display email
+                document.getElementById('userLoginSection').style.display = 'block';
+                // Hide the login container and show the camera container
+                loginContainer.style.display = 'none';
+                document.getElementById('DashboardContainer').style.display = 'block';
+                // Update the user's arrival time after registration
+                updateArrivalTime(user.uid);
+            }
+        });
+
+        // Logout function
+        document.getElementById('logoutLink').addEventListener('click', () => {
+            auth.signOut().then(() => {
+                // Sign-out successful.
+                // Hide the user login section
+                document.getElementById('userLoginSection').style.display = 'none';
+                document.getElementById('CameraContainer').style.display = 'none';
+                document.getElementById('DashboardContainer').style.display = 'none';
+
+                // Show the login container
+                loginContainer.style.display = 'block';
+                // Display a success toast message
+                // alert("Logout successful!");
+            }).catch((error) => {
+                // An error happened.
+                console.error("Logout error:", error.message);
+                // You can display an error toast message here if you want
+                alert("Logout failed. Please try again.");
+            });
+        });
+
+
+        // Inside the updateArrivalTime function after retrieving arrival time from the database
+        function updateArrivalTime(userUid) {
+            const dbRef = ref(db, `users/${userUid}/CurrentParkingData`);
+            get(dbRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    // Iterate over the child nodes under CurrentParkingData
+                    snapshot.forEach((dateSnapshot) => {
+                        dateSnapshot.forEach((timeSnapshot) => {
+                            // Check if the arrivalTime exists under the current time slot
+                            if ('arrivalTime' in timeSnapshot.val()) {
+                                const arrivalTimeVal = timeSnapshot.val().arrivalTime;
+                                arrivalTime = arrivalTimeVal; // Set the arrivalTime variable
+                                document.querySelector('.arrivalTimeOut').textContent = arrivalTimeVal;
+                            } else {
+                                console.log("Arrival time not found for the user.");
+                            }
+                        });
+                    });
+                } else {
+                    console.log("CurrentParkingData not found for user:", userUid);
+                }
+            }).catch((error) => {
+                console.error("Error getting CurrentParkingData for user:", userUid, error);
+            });
+        }
+
+
+
+        // Register button click event
+        const registerBtn = document.getElementById('addBtn');
+        registerBtn.addEventListener('click', () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            registerUser(email, password);
+        });
+
+        // Login button click event
+        const loginBtn = document.getElementById('loginBtn');
+        loginBtn.addEventListener('click', () => {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            loginUser(email, password);
+        });
+
+
+        // Check my Slot click event
+        // Event listener for "Check my Slot" button click
+        document.getElementById('buySlot').addEventListener('click', () => {
+            document.getElementById('DashboardContainer').style.display = 'none';
+            document.getElementById('CameraContainer').style.display = 'block';
+        });
+
+        // Event listener for "Buy a Slot" button click
+        document.getElementById('wantToBuySlot').addEventListener('click', () => {
+            document.getElementById('DashboardContainer').style.display = 'none';
+            document.getElementById('CameraContainer').style.display = 'block';
+
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const amOrPm = hours >= 12 ? 'PM' : 'AM';
+            const formattedHours = hours % 12 || 12;
+            const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+            const currentTime = `${formattedHours}:${formattedMinutes} ${amOrPm}`;
+
+            const user = JSON.parse(sessionStorage.getItem('user')); // Assuming user data is stored in sessionStorage
+
+            if (user) {
+                const userRef = ref(db, `users/${user.uid}/CurrentParkingData/${year}-${month}-${day}/${currentTime}`);
+
+                set(userRef, {
+                    arrivalTime: currentTime,
+                    totalTime: 0,
+                    totalPayment: 0,
+                    paid: 0
+                })
+                    .then(() => {
+                        console.log("Data Saved Successfully");
+                        // Call the updateArrivalTime function to update arrival time after registration
+                        updateArrivalTime(user.uid);
+                        // Initialize arrivalTime
+                        arrivalTime = updateCurrentTime();
+                    })
+                    .catch((error) => {
+                        console.error("Error saving data:", error);
+                        alert("Unsuccessful");
+                    });
+            } else {
+                console.error("No user is logged in.");
+            }
+        });
+
+
+
+
+        // Get reference to the "Pay For Dispatch" button
+        const payForDispatchBtn = document.getElementById('payForDispatch');
+        // Get reference to the CameraContainer and thankYouPaymentContainer
+        const cameraContainer = document.getElementById('CameraContainer');
+
+        // Get reference to the "Buy a Slot" button
+        const wantToBuySlotBtn = document.getElementById('wantToBuySlot');
+
+        // Event listener for the "Pay For Dispatch" button click
+        wantToBuySlotBtn.addEventListener('click', () => {
+            const slotsRef = ref(db, 'SlotsDetails');
+            get(slotsRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const slots = snapshot.val();
+                    if (slots.slot1 === 0 || slots.slot2 === 0) {
+                        // Set registration_status to 1
+                        set(ref(db, 'registration_status/'), 1).then(() => {
+                            console.log("registration_status set to 1.");
+
+                            // Wait for 10 seconds
+                            setTimeout(() => {
+                                // Set registration_status back to 0
+                                set(ref(db, 'registration_status/'), 0).then(() => {
+                                    console.log("registration_status set back to 0.");
+                                }).catch((error) => {
+                                    console.error("Error setting registration_status back to 0:", error);
+                                });
+                            }, 10000); // 10 seconds
+                        }).catch((error) => {
+                            console.error("Error setting registration_status to 1:", error);
+                        });
+                    }
+                }
+            });
+        });
+
+
+        // Event listener for the "Pay For Dispatch" button click
+        payForDispatchBtn.addEventListener('click', () => {
+            // Get the current user from sessionStorage
+            const user = JSON.parse(sessionStorage.getItem('user'));
+            if (user) {
+                // Set paid to 1
+                set(ref(db, 'paid/'), 1).then(() => {
+                    console.log("paid set to 1.");
+
+                    // Wait for 10 seconds
+                    setTimeout(() => {
+                        // Set paid back to 0
+                        set(ref(db, 'paid/'), 0).then(() => {
+                            console.log("paid set back to 0.");
+                        }).catch((error) => {
+                            console.error("Error setting paid back to 0:", error);
+                        });
+                    }, 5000); // 10 seconds
+                }).catch((error) => {
+                    console.error("Error setting paid to 1:", error);
+                });
+
+
+                // Reference to the user's CurrentParkingData node in the database
+                const userParkingDataRef = ref(db, `users/${user.uid}/CurrentParkingData`);
+
+                // Get the snapshot of CurrentParkingData
+                get(userParkingDataRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        // Iterate over the child nodes under CurrentParkingData
+                        snapshot.forEach((dateSnapshot) => {
+                            // Iterate over the child nodes under each date
+                            dateSnapshot.forEach((timeSnapshot) => {
+                                // Reference to the 'paid' value under each time slot
+                                const userPaidRef = ref(db, `users/${user.uid}/CurrentParkingData/${dateSnapshot.key}/${timeSnapshot.key}`);
+
+                                // Update the 'paid' value to 1
+                                update(userPaidRef, {
+                                    paid: 1
+                                }).then(() => {
+                                    console.log("Paid value updated successfully for user:", user.uid);
+
+                                    // Add a delay before moving data to HistoryParkingData
+                                    setTimeout(() => {
+                                        // Move the data to HistoryParkingData
+                                        const historyParkingDataRef = ref(db, `users/${user.uid}/HistoryParkingData/${dateSnapshot.key}/${timeSnapshot.key}`);
+                                        set(historyParkingDataRef, timeSnapshot.val()).then(() => {
+                                            console.log("Data moved to HistoryParkingData successfully.");
+
+                                            // Update the 'paid' value to 1 in HistoryParkingData
+                                            update(historyParkingDataRef, {
+                                                paid: 1
+                                            }).then(() => {
+                                                console.log("Paid value updated to 1 in HistoryParkingData.");
+                                            }).catch((error) => {
+                                                console.error("Error updating paid value in HistoryParkingData:", error);
+                                            });
+
+                                            // Remove the data from CurrentParkingData
+                                            remove(timeSnapshot.ref).then(() => {
+                                                console.log("Data removed from CurrentParkingData successfully.");
+
+                                                // Hide the CameraContainer and show the thankYouPaymentContainer
+                                                cameraContainer.style.display = 'none';
+                                                thankYouPaymentContainer.style.display = 'block';
+
+                                                // Refresh the page after 2 seconds
+                                                setTimeout(() => {
+                                                    auth.signOut().then(() => {
+                                                        // Sign-out successful.
+                                                        // Hide the user login section
+                                                        document.getElementById('userLoginSection').style.display = 'none';
+                                                        document.getElementById('CameraContainer').style.display = 'none';
+                                                        document.getElementById('DashboardContainer').style.display = 'none';
+                                                        document.getElementById('thankYouPaymentContainer').style.display = 'none';
+
+                                                        // Show the login container
+                                                        loginContainer.style.display = 'block';
+                                                        // Display a success toast message
+                                                        // alert("Logout successful!");
+                                                    }).catch((error) => {
+                                                        // An error happened.
+                                                        console.error("Logout error:", error.message);
+                                                        // You can display an error toast message here if you want
+                                                        alert("Logout failed. Please try again.");
+                                                    });
+                                                    // location.reload();
+                                                }, 2000);
+                                            }).catch((error) => {
+                                                console.error("Error removing data from CurrentParkingData:", error);
+                                            });
+                                        }).catch((error) => {
+                                            console.error("Error moving data to HistoryParkingData:", error);
+                                        });
+                                    }, 5000); // 5-second delay (5000 milliseconds)
+
+                                }).catch((error) => {
+                                    console.error("Error updating paid value for user:", user.uid, error);
+                                });
+                            });
+                        });
+                    } else {
+                        console.log("CurrentParkingData not found for user:", user.uid);
+                    }
+                }).catch((error) => {
+                    console.error("Error getting CurrentParkingData for user:", user.uid, error);
+                });
+            } else {
+                console.error("No user is logged in.");
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+
+        import { getDatabase, ref, child, get, set, update, remove } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
+        const db = getDatabase();
+
+
+        let name = document.getElementById('name');
+        let email = document.getElementById('email');
+        let phoneNumber = document.getElementById('phoneNumber');
+        let nic = document.getElementById('nic');
+        let password = document.getElementById('password')
+        let vehicleNumber = document.getElementById('vehicleNumber');
+        let vehicleType = document.getElementById('vehicleType');
+        let vehicleBrand = document.getElementById('vehicleBrand');
+        let vehicleModal = document.getElementById('vehicleModal');
+
+        let addBtn = document.getElementById('addBtn');
+        let retrieveBtn = document.getElementById('retrieveBtn');
+        let updateBtn = document.getElementById('updateBtn');
+        let deleteBtn = document.getElementById('deleteBtn');
+
+        // Declare the slots variable
+        let slots;
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Get references to the slots
+            const slot1 = document.getElementById('slot1');
+            const slot2 = document.getElementById('slot2');
+
+            // Function to update slot colors based on database values
+            function updateSlotColors() {
+                const slotsRef = ref(db, 'SlotsDetails');
+                get(slotsRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        slots = snapshot.val();
+
+
+                        // Update Slot 1 color
+                        if (slots.slot1 === 1) {
+                            slot1.classList.remove('available');
+                            slot1.classList.add('not_available');
+                        } else {
+                            slot1.classList.remove('not_available');
+                            slot1.classList.add('available');
+                        }
+                        // Update Slot 2 color
+                        if (slots.slot2 === 1) {
+                            slot2.classList.remove('available');
+                            slot2.classList.add('not_available');
+                        } else {
+                            slot2.classList.remove('not_available');
+                            slot2.classList.add('available');
+                        }
+                    } else {
+                        console.log("Slots data not found");
+                    }
+                }).catch((error) => {
+                    console.error("Error getting slots data: ", error);
+                });
+            }
+
+            // Call checkCurrentParkingDataExists initially
+            checkSlotsAvailable();
+
+
+            // Call checkCurrentParkingDataExists initially
+            updateSlotColors();
+
+            // Call checkCurrentParkingDataExists every second to update the time
+            setInterval(updateSlotColors, 1000);
+
+        });
+
+        // Get the modal
+        const warningModal = document.getElementById('warningModal');
+
+        // Get the <span> element that closes the modal
+        // const span = document.getElementsByClassName("close")[0];
+
+
+        // Event listener for closing the modal
+        // span.onclick = function () {
+        //     warningModal.style.display = "none";
+        // }
+
+        // When the user clicks anywhere outside of the modal, close it
+        // window.onclick = function (event) {
+        //     if (event.target == modal) {
+        //         modal.style.display = "none";
+        //     }
+        // }
+
+        // Get references to the dropdowns
+        const vehicleTypeDropdown = document.getElementById('vehicleType');
+        const vehicleBrandDropdown = document.getElementById('vehicleBrand');
+        const vehicleModalDropdown = document.getElementById('vehicleModal');
+
+        // Data for vehicle types, brands, and models
+        const vehicleData = {
+            'Car': {
+                'Toyota': ['Corolla', 'Camry', 'Rav4'],
+                'Suzuki': ['Swift', 'Baleno', 'Vitara'],
+                'Honda': ['Civic', 'Accord', 'CR-V'],
+                'Ford': ['Fusion', 'Escape', 'Explorer'],
+                'Chevrolet': ['Malibu', 'Equinox', 'Tahoe'],
+            },
+            'Van': {
+                'Toyota': ['Sienna', 'Hiace', 'Alphard'],
+                'Suzuki': ['Every', 'Carry', 'Ertiga'],
+                'Nissan': ['NV200', 'Quest', 'Urvan'],
+                'Mercedes-Benz': ['Sprinter', 'Metris', 'V-Class'],
+                'Ford': ['Transit', 'Econoline', 'Tourneo'],
+            },
+            'Bike': {
+                'Bajaj': ['Pulsar', 'Platina', 'Dominar'],
+                'Suzuki': ['Gixxer', 'Hayabusa', 'Access'],
+                'Yamaha': ['FZ', 'R15', 'MT'],
+                'Honda': ['CBR', 'Activa', 'Hornet'],
+                'Kawasaki': ['Ninja', 'Versys', 'Z'],
+            }
+        };
+
+        // Function to populate vehicle brands based on the selected type
+        function populateVehicleBrands() {
+            const selectedType = vehicleTypeDropdown.value;
+            const brands = vehicleData[selectedType];
+            vehicleBrandDropdown.innerHTML = '<option value="" disabled selected>-Select-</option>';
+            for (const brand in brands) {
+                const option = document.createElement('option');
+                option.value = brand;
+                option.textContent = brand;
+                vehicleBrandDropdown.appendChild(option);
+            }
+            // Trigger the change event on Vehicle Brand dropdown to populate models
+            populateVehicleModels();
+        }
+
+        // Function to populate vehicle models based on the selected brand
+        function populateVehicleModels() {
+            const selectedType = vehicleTypeDropdown.value;
+            const selectedBrand = vehicleBrandDropdown.value;
+            if (selectedBrand) {
+                const models = vehicleData[selectedType][selectedBrand];
+                vehicleModalDropdown.innerHTML = '<option value="" disabled selected>-Select-</option>';
+                models.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model;
+                    option.textContent = model;
+                    vehicleModalDropdown.appendChild(option);
+                });
+            } else {
+                vehicleModalDropdown.innerHTML = '<option value="" disabled selected>-Select Vehicle Brand First-</option>';
+            }
+        }
+
+
+        function checkSlotsAvailable() {
+            // Get the current user from sessionStorage
+            const userCheck = JSON.parse(sessionStorage.getItem('user'));
+            if (userCheck) {
+                const slotsRef = ref(db, 'SlotsDetails');
+                get(slotsRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const slots = snapshot.val();
+
+                        if (slots.slot1 === 1 && slots.slot2 === 1) {
+                            document.getElementById('wantToBuySlot').style.display = 'none';
+                        } else {
+                            // Get the current user from sessionStorage
+                            const user = JSON.parse(sessionStorage.getItem('user'));
+                            if (user) {
+
+                                // Reference to the user's 'CurrentParkingData' value in the database
+                                const userParkingRef = ref(db, `users/${user.uid}/CurrentParkingData`);
+
+                                // Retrieve the 'paid' value from the database
+                                get(userParkingRef).then((snapshot) => {
+                                    if (snapshot.exists()) {
+                                        document.getElementById('wantToBuySlot').style.display = 'none';
+                                        // document.getElementById('DashboardContainer').style.display = 'none';
+                                        // document.getElementById('CameraContainer').style.display = 'block';
+                                    } else {
+                                        console.log("User has already paid.");
+                                        // Optionally, display a message to inform the user
+                                        document.getElementById('wantToBuySlot').style.display = 'inline-block';
+                                    }
+                                }).catch((error) => {
+                                    console.error("Error getting paid value:", error);
+                                });
+                            } else {
+                                console.error("No user is logged in.");
+                            }
+                        }
+
+                    } else {
+                        console.log("Slots data not found");
+                    }
+                }).catch((error) => {
+                    console.error("Error getting slots data: ", error);
+                });
+
+            }
+        }
+
+
+
+
+
+
+
+        // Event listeners for dropdown changes
+        vehicleTypeDropdown.addEventListener('change', populateVehicleBrands);
+        vehicleBrandDropdown.addEventListener('change', populateVehicleModels);
+
+        function AddData(user) {
+            if (!name.value || !email.value || !phoneNumber.value || !nic.value || !vehicleNumber.value || !vehicleType.value || !vehicleBrand.value || !vehicleModal.value || !password.value) {
+                alert("Please fill all the fields");
+                return;
+            }
+
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const amOrPm = hours >= 12 ? 'PM' : 'AM';
+            const formattedHours = hours % 12 || 12; // Convert to 12-hour format
+            const formattedMinutes = minutes < 10 ? '0' + minutes : minutes; // Add leading zero if needed
+            const currentTime = `${formattedHours}:${formattedMinutes} ${amOrPm}`;
+
+            set(ref(db, 'users/' + user.uid), {
+                name: name.value,
+                email: email.value,
+                phoneNumber: Number(phoneNumber.value),
+                nic: nic.value,
+                password: password.value,
+                vehicleNumber: vehicleNumber.value,
+                vehicleType: vehicleType.value,
+                vehicleBrand: vehicleBrand.value,
+                vehicleModal: vehicleModal.value,
+            })
+                .then(() => {
+                    console.log("Data Saved Successfully");
+                })
+                .catch((error) => {
+                    alert("Unsuccessful");
+                    console.log(error);
+                });
+        }
+
+
+        function RetrieveData() {
+            const dbRef = ref(db);
+
+            get(child(dbRef, 'users/' + user.uid)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    name.value = snapshot.val().name;
+                    email.value = snapshot.val().email;
+                    phoneNumber.value = snapshot.val().phoneNumber;
+                    nic.value = snapshot.val().nic;
+                    password = snapshot.val().password;
+                    vehicleNumber.value = snapshot.val().vehicleNumber;
+                    vehicleType.value = snapshot.val().vehicleType;
+                    vehicleBrand.value = snapshot.val().vehicleBrand;
+                    vehicleModal.value = snapshot.val().vehicleModal;
+                }
+                else {
+                    alert("User Details does not exist");
+                }
+            })
+                .catch(() => {
+                    alert("Unsuccessful");
+                    console.log(error);
+                })
+        }
+
+        function UpdateData() {
+            update(ref(db, 'users/' + user.uid), {
+                name: name.value,
+                email: email.value,
+                phoneNumber: Number(phoneNumber.value),
+                nic: nic.value,
+                password: password.value,
+                vehicleNumber: vehicleNumber.value,
+                vehicleType: vehicleType.value,
+                vehicleBrand: vehicleBrand.value,
+                vehicleModal: vehicleModal.value
+            })
+                .then(() => {
+                    alert("Data Updated Successfully");
+                })
+                .catch(() => {
+                    alert("Unsuccessful");
+                    console.log(error);
+                })
+        }
+
+        function DeleteData() {
+            remove(ref(db, 'users/' + user.uid))
+                .then(() => {
+                    alert("Data Deleted Successfully");
+                })
+                .catch(() => {
+                    alert("Unsuccessful");
+                    console.log(error);
+                })
+        }
+
+        // addBtn.addEventListener('click', AddData);
+        // retrieveBtn.addEventListener('click', RetrieveData);
+        // updateBtn.addEventListener('click', UpdateData);
+        // deleteBtn.addEventListener('click', DeleteData);
+
+
+
+
+    </script>
+
+</body>
+
+</html>
